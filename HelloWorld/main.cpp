@@ -19,7 +19,7 @@ static void readDigitFromConsole(int &digit)
 
 	do
 	{
-		printf("Enter number:\n");
+		printf("Enter number: ");
 		int readResult = scanf_s("%i", &digit);
 		if (readResult != 1)
 		{
@@ -28,7 +28,7 @@ static void readDigitFromConsole(int &digit)
 			char fGetsBuffer[256];
 			fgets(fGetsBuffer, sizeof(fGetsBuffer) / sizeof(fGetsBuffer[0]), stdin);
 
-			printf("Invalid number. Please try again:\n");
+			printf("Invalid number. Please try again: ");
 		}
 		else
 		{
@@ -40,36 +40,13 @@ static void readDigitFromConsole(int &digit)
 
 void main()
 {
-
-	char str[80];
-	int i;
-
-	
-
 	try
 	{
 		printf("Hello World!\n");
 
-		//readDigitFromConsole(calculator->digit1);
+		readDigitFromConsole(calculator->digit1);
 
-		printf("First number:");
-
-		int readResult = scanf_s("%i", &calculator->digit1);
-		if (readResult != 1)
-		{
-			clearerr(stdin);
-			// TODO: This is a hack to clear stdin (fflush doesn't seem to work)
-			char fGetsBuffer[256];
-			fgets(fGetsBuffer, sizeof(fGetsBuffer) / sizeof(fGetsBuffer[0]), stdin);
-			
-			printf("Invalid digit. Please enter a number:\n");
-			readResult = scanf_s(" %i", &calculator->digit1);
-		}
-
-
-		printf("Second number:");
-
-		readResult = scanf_s("%i", &calculator->digit2);
+		readDigitFromConsole(calculator->digit2);
 
 		bool operationCompleted = true;
 		int result = 0;
@@ -80,7 +57,7 @@ void main()
 
 			char op = ' ';
 			printf("Operation:");
-			readResult = scanf_s(" %c", &op, 1);
+			scanf_s(" %c", &op, 1);
 
 			auto opEnum = calculator->ConvertCalculatorOperation(op);
 
