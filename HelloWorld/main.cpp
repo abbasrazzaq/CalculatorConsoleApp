@@ -4,14 +4,12 @@
 
 /*
 * TODO:
-* * - Use git
-*	- Refactor
 *	- Use stl
 *	- Unit testing
 *	- Logging
 */
 
-Calculator *calculator = new Calculator();
+
 
 static void readDigitFromConsole(int &digit)
 {
@@ -19,7 +17,6 @@ static void readDigitFromConsole(int &digit)
 
 	do
 	{
-		printf("Enter number: ");
 		int readResult = scanf_s("%i", &digit);
 		if (readResult != 1)
 		{
@@ -38,44 +35,58 @@ static void readDigitFromConsole(int &digit)
 	} while (!success);
 }
 
+static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator *calculator)
+{
+	ECalculatorOperation result = ECalculatorOperation::INVALID;
+
+	bool operationCompleted = true;
+
+	do
+	{
+		operationCompleted = true;
+
+		char op = ' ';
+		printf("Operation:");
+		scanf_s(" %c", &op, 1);
+
+		result = calculator->ConvertCalculatorOperation(op);
+
+		if (result == ECalculatorOperation::INVALID)
+		{
+			operationCompleted = false;
+
+			printf("Unrecognized operation. Please try again: ");
+		}
+		else
+		{
+			operationCompleted = true;
+		}
+	} while (!operationCompleted);
+
+	return result;
+}
+
 void main()
 {
 	try
 	{
-		printf("Hello World!\n");
-
-		readDigitFromConsole(calculator->digit1);
-
-		readDigitFromConsole(calculator->digit2);
-
-		bool operationCompleted = true;
-		int result = 0;
-
-		do
+		while (1)
 		{
-			operationCompleted = true;
+			Calculator* calculator = new Calculator();
 
-			char op = ' ';
-			printf("Operation:");
-			scanf_s(" %c", &op, 1);
+			printf("Enter the first number: ");
+			readDigitFromConsole(calculator->digit1);
 
-			auto opEnum = calculator->ConvertCalculatorOperation(op);
+			printf("Enter the second number: ");
+			readDigitFromConsole(calculator->digit2);
 
-			if (opEnum == INVALID)
-			{
-				operationCompleted = false;
-			}
-			else
-			{
-				operationCompleted = true;
+			ECalculatorOperation calculatorOperation = readCalculatorOperationFromConsole(calculator);
 
-				result = calculator->Calculate(opEnum);
-			}
-		} while (!operationCompleted);
+			int result = calculator->Calculate(calculatorOperation);
 
-		printf("Here is the result: %d", result);
-		getchar();
-		getchar();
+			printf("Here is the result: %d\n", result);
+		}
+		
 	}
 	catch (EErrorCodes e)
 	{

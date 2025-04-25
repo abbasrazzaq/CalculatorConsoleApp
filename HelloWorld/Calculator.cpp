@@ -1,7 +1,7 @@
 #include "Calculator.h"
 #include "ErrorCodes.h"
 
-int Calculator::Calculate(CalculatorOperation op)
+int Calculator::Calculate(ECalculatorOperation op)
 {
 	int result = 0;
 
@@ -26,9 +26,9 @@ int Calculator::Calculate(CalculatorOperation op)
 	return result;
 }
 
-CalculatorOperation Calculator::ConvertCalculatorOperation(char op)
+ECalculatorOperation Calculator::ConvertCalculatorOperation(char op) const
 {
-	CalculatorOperation result = INVALID;
+	ECalculatorOperation result = INVALID;
 
 	switch (op)
 	{
