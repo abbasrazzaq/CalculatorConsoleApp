@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "Calculator.h"
 #include "ErrorCodes.h"
+#include <iostream>
 
 /*
 * TODO:
@@ -9,7 +10,7 @@
 *	- Logging
 */
 
-
+using namespace std;
 
 static void readDigitFromConsole(int &digit)
 {
@@ -17,15 +18,12 @@ static void readDigitFromConsole(int &digit)
 
 	do
 	{
-		int readResult = scanf_s("%i", &digit);
-		if (readResult != 1)
+		cin >> digit;
+		if (cin.fail())
 		{
-			clearerr(stdin);
-			// TODO: This is a hack to clear stdin (fflush doesn't seem to work)
-			char fGetsBuffer[256];
-			fgets(fGetsBuffer, sizeof(fGetsBuffer) / sizeof(fGetsBuffer[0]), stdin);
-
-			printf("Invalid number. Please try again: ");
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid number. Please try again: ";
 		}
 		else
 		{
@@ -46,8 +44,9 @@ static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator 
 		operationCompleted = true;
 
 		char op = ' ';
-		printf("Operation:");
-		scanf_s(" %c", &op, 1);
+
+		cout << "Operation: ";
+		cin >> op;
 
 		result = calculator->ConvertCalculatorOperation(op);
 
@@ -55,7 +54,7 @@ static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator 
 		{
 			operationCompleted = false;
 
-			printf("Unrecognized operation. Please try again: ");
+			cout << "Unrecognized operation. Please try again: ";
 		}
 		else
 		{
@@ -74,23 +73,23 @@ void main()
 		{
 			Calculator* calculator = new Calculator();
 
-			printf("Enter the first number: ");
+			cout << "Enter the first number: ";
 			readDigitFromConsole(calculator->digit1);
 
-			printf("Enter the second number: ");
+			cout << "Enter the second number: ";
 			readDigitFromConsole(calculator->digit2);
 
 			ECalculatorOperation calculatorOperation = readCalculatorOperationFromConsole(calculator);
 
 			int result = calculator->Calculate(calculatorOperation);
 
-			printf("Here is the result: %d\n", result);
+			cout << "Here is the result: " << result << endl;
 		}
 		
 	}
 	catch (EErrorCodes e)
 	{
-		printf(ErrorCodes::ConvertErrorToMessage(e));
+		cout << ErrorCodes::ConvertErrorToMessage(e) << endl;
 	}
 	
 
