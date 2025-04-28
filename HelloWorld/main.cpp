@@ -11,14 +11,50 @@
 //#include "../../spdlog/include/spdlog/cfg/env.h"   // support for loading levels from the environment variable
 //#include "../../spdlog/include/spdlog/fmt/ostr.h"  // support for user defined types
 
-/*
-* TODO:
-*	- Logging (nuget?)
-*/
-
 using namespace std;
 
-static void readDigitFromConsole(int &digit)
+static void readDigitFromConsole(int& digit);
+static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator* calculator);
+
+int main()
+{
+	auto logger = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
+
+	logger->error("Message from spdlog");
+
+	try
+	{
+		while (1)
+		{
+			Calculator* calculator = new Calculator();
+
+			cout << "Enter the first number: ";
+			readDigitFromConsole(calculator->digit1);
+
+			cout << "Enter the second number: ";
+			readDigitFromConsole(calculator->digit2);
+
+			ECalculatorOperation calculatorOperation = readCalculatorOperationFromConsole(calculator);
+
+			int result = calculator->Calculate(calculatorOperation);
+
+			cout << "Here is the result: " << result << endl;
+		}
+		
+	}
+	catch (EErrorCodes e)
+	{
+		logger->error(ErrorCodes::ConvertErrorToMessage(e));
+		cout << ErrorCodes::ConvertErrorToMessage(e) << endl;
+	}
+	
+	logger->flush();
+
+	return 0;
+}
+
+
+static void readDigitFromConsole(int& digit)
 {
 	bool success = false;
 
@@ -39,7 +75,7 @@ static void readDigitFromConsole(int &digit)
 	} while (!success);
 }
 
-static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator *calculator)
+static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator* calculator)
 {
 	ECalculatorOperation result = ECalculatorOperation::INVALID;
 
@@ -69,48 +105,4 @@ static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator 
 	} while (!operationCompleted);
 
 	return result;
-}
-
-void main()
-{
-
-	auto logger = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
-
-	logger->error("Message from spdlog");
-
-	logger->flush();
-
-	/*spdlog::cfg::load_env_levels();
-
-	spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR,
-		SPDLOG_VER_PATCH);
-
-	spdlog::critical("A critical error");*/
-
-	try
-	{
-		while (1)
-		{
-			Calculator* calculator = new Calculator();
-
-			cout << "Enter the first number: ";
-			readDigitFromConsole(calculator->digit1);
-
-			cout << "Enter the second number: ";
-			readDigitFromConsole(calculator->digit2);
-
-			ECalculatorOperation calculatorOperation = readCalculatorOperationFromConsole(calculator);
-
-			int result = calculator->Calculate(calculatorOperation);
-
-			cout << "Here is the result: " << result << endl;
-		}
-		
-	}
-	catch (EErrorCodes e)
-	{
-		cout << ErrorCodes::ConvertErrorToMessage(e) << endl;
-	}
-	
-
 }
