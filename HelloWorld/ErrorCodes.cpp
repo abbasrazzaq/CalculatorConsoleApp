@@ -10,5 +10,8 @@ const char* ErrorCodes::ConvertErrorToMessage(EErrorCodes e)
 	case EErrorCodes::GENERIC_ERROR:
 		return "An error occurred.";
 		break;
+	default:
+		return "";
+		break;
 	};
 }

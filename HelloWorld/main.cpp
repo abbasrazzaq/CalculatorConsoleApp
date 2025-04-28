@@ -2,12 +2,18 @@
 #include "Calculator.h"
 #include "ErrorCodes.h"
 #include <iostream>
+#define FMT_UNICODE 0
+
+#include "../../spdlog/include/spdlog/sinks/basic_file_sink.h"
+//
+////
+//#include "../../spdlog/include/spdlog/spdlog.h"
+//#include "../../spdlog/include/spdlog/cfg/env.h"   // support for loading levels from the environment variable
+//#include "../../spdlog/include/spdlog/fmt/ostr.h"  // support for user defined types
 
 /*
 * TODO:
-*	- Use stl
-*	- Unit testing
-*	- Logging
+*	- Logging (nuget?)
 */
 
 using namespace std;
@@ -67,6 +73,20 @@ static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator 
 
 void main()
 {
+
+	auto logger = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
+
+	logger->error("Message from spdlog");
+
+	logger->flush();
+
+	/*spdlog::cfg::load_env_levels();
+
+	spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR,
+		SPDLOG_VER_PATCH);
+
+	spdlog::critical("A critical error");*/
+
 	try
 	{
 		while (1)
