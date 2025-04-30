@@ -13,32 +13,36 @@
 
 using namespace std;
 
-static void readDigitFromConsole(int& digit);
-static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator* calculator);
+typedef std::shared_ptr<spdlog::logger> LoggerPtr;
+
+static void readDigitFromConsole(int& digit, LoggerPtr logger);
+static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator* calculator, LoggerPtr logger);
 
 int main()
 {
 	auto logger = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
+	logger->set_level(spdlog::level::level_enum::debug);
 
-	logger->error("Message from spdlog");
-
+	logger->debug("Calculator starting");
+	
 	try
 	{
 		while (1)
 		{
-			Calculator* calculator = new Calculator();
+			Calculator *calculator = new Calculator();
 
 			cout << "Enter the first number: ";
-			readDigitFromConsole(calculator->digit1);
+			readDigitFromConsole(calculator->digit1, logger);
 
 			cout << "Enter the second number: ";
-			readDigitFromConsole(calculator->digit2);
+			readDigitFromConsole(calculator->digit2, logger);
 
-			ECalculatorOperation calculatorOperation = readCalculatorOperationFromConsole(calculator);
+			ECalculatorOperation calculatorOperation = readCalculatorOperationFromConsole(calculator, logger);
 
 			int result = calculator->Calculate(calculatorOperation);
 
 			cout << "Here is the result: " << result << endl;
+			logger->flush();
 		}
 		
 	}
@@ -54,7 +58,7 @@ int main()
 }
 
 
-static void readDigitFromConsole(int& digit)
+static void readDigitFromConsole(int& digit, LoggerPtr logger)
 {
 	bool success = false;
 
@@ -66,6 +70,7 @@ static void readDigitFromConsole(int& digit)
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			cout << "Invalid number. Please try again: ";
+			logger->debug("Invalid number entered");
 		}
 		else
 		{
@@ -75,7 +80,7 @@ static void readDigitFromConsole(int& digit)
 	} while (!success);
 }
 
-static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator* calculator)
+static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator* calculator, LoggerPtr logger)
 {
 	ECalculatorOperation result = ECalculatorOperation::INVALID;
 
@@ -97,6 +102,7 @@ static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator*
 			operationCompleted = false;
 
 			cout << "Unrecognized operation. Please try again: ";
+			logger->debug(std::string("Unrecognized operation entered: ") + std::to_string(op));
 		}
 		else
 		{
