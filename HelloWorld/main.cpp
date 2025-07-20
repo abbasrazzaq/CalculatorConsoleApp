@@ -1,34 +1,76 @@
 #include <stdio.h>
 #include "Calculator.h"
 #include "ErrorCodes.h"
+#include <iostream>
+#define FMT_UNICODE 0
 
-/*
-* TODO:
-* * - Use git
-*	- Refactor
-*	- Use stl
-*	- Unit testing
-*	- Logging
-*/
+#include "../../spdlog/include/spdlog/sinks/basic_file_sink.h"
+//
+////
+//#include "../../spdlog/include/spdlog/spdlog.h"
+//#include "../../spdlog/include/spdlog/cfg/env.h"   // support for loading levels from the environment variable
+//#include "../../spdlog/include/spdlog/fmt/ostr.h"  // support for user defined types
 
-Calculator *calculator = new Calculator();
+using namespace std;
 
-static void readDigitFromConsole(int &digit)
+typedef std::shared_ptr<spdlog::logger> LoggerPtr;
+
+static void readDigitFromConsole(int& digit, LoggerPtr logger);
+static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator* calculator, LoggerPtr logger);
+
+int main()
+{
+	auto logger = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
+	logger->set_level(spdlog::level::level_enum::debug);
+
+	logger->debug("Calculator starting");
+	
+	try
+	{
+		while (1)
+		{
+			Calculator *calculator = new Calculator();
+
+			cout << "Enter the first number: ";
+			readDigitFromConsole(calculator->digit1, logger);
+
+			cout << "Enter the second number: ";
+			readDigitFromConsole(calculator->digit2, logger);
+
+			ECalculatorOperation calculatorOperation = readCalculatorOperationFromConsole(calculator, logger);
+
+			int result = calculator->Calculate(calculatorOperation);
+
+			cout << "Here is the result: " << result << endl;
+			logger->flush();
+		}
+		
+	}
+	catch (EErrorCodes e)
+	{
+		logger->error(ErrorCodes::ConvertErrorToMessage(e));
+		cout << ErrorCodes::ConvertErrorToMessage(e) << endl;
+	}
+	
+	logger->flush();
+
+	return 0;
+}
+
+
+static void readDigitFromConsole(int& digit, LoggerPtr logger)
 {
 	bool success = false;
 
 	do
 	{
-		printf("Enter number:\n");
-		int readResult = scanf_s("%i", &digit);
-		if (readResult != 1)
+		cin >> digit;
+		if (cin.fail())
 		{
-			clearerr(stdin);
-			// TODO: This is a hack to clear stdin (fflush doesn't seem to work)
-			char fGetsBuffer[256];
-			fgets(fGetsBuffer, sizeof(fGetsBuffer) / sizeof(fGetsBuffer[0]), stdin);
-
-			printf("Invalid number. Please try again:\n");
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid number. Please try again: ";
+			logger->debug("Invalid number entered");
 		}
 		else
 		{
@@ -38,72 +80,35 @@ static void readDigitFromConsole(int &digit)
 	} while (!success);
 }
 
-void main()
+static ECalculatorOperation readCalculatorOperationFromConsole(const Calculator* calculator, LoggerPtr logger)
 {
+	ECalculatorOperation result = ECalculatorOperation::INVALID;
 
-	char str[80];
-	int i;
+	bool operationCompleted = true;
 
-	
-
-	try
+	do
 	{
-		printf("Hello World!\n");
+		operationCompleted = true;
 
-		//readDigitFromConsole(calculator->digit1);
+		char op = ' ';
 
-		printf("First number:");
+		cout << "Operation: ";
+		cin >> op;
 
-		int readResult = scanf_s("%i", &calculator->digit1);
-		if (readResult != 1)
+		result = calculator->ConvertCalculatorOperation(op);
+
+		if (result == ECalculatorOperation::INVALID)
 		{
-			clearerr(stdin);
-			// TODO: This is a hack to clear stdin (fflush doesn't seem to work)
-			char fGetsBuffer[256];
-			fgets(fGetsBuffer, sizeof(fGetsBuffer) / sizeof(fGetsBuffer[0]), stdin);
-			
-			printf("Invalid digit. Please enter a number:\n");
-			readResult = scanf_s(" %i", &calculator->digit1);
+			operationCompleted = false;
+
+			cout << "Unrecognized operation. Please try again: ";
+			logger->debug(std::string("Unrecognized operation entered: ") + std::to_string(op));
 		}
-
-
-		printf("Second number:");
-
-		readResult = scanf_s("%i", &calculator->digit2);
-
-		bool operationCompleted = true;
-		int result = 0;
-
-		do
+		else
 		{
 			operationCompleted = true;
+		}
+	} while (!operationCompleted);
 
-			char op = ' ';
-			printf("Operation:");
-			readResult = scanf_s(" %c", &op, 1);
-
-			auto opEnum = calculator->ConvertCalculatorOperation(op);
-
-			if (opEnum == INVALID)
-			{
-				operationCompleted = false;
-			}
-			else
-			{
-				operationCompleted = true;
-
-				result = calculator->Calculate(opEnum);
-			}
-		} while (!operationCompleted);
-
-		printf("Here is the result: %d", result);
-		getchar();
-		getchar();
-	}
-	catch (EErrorCodes e)
-	{
-		printf(ErrorCodes::ConvertErrorToMessage(e));
-	}
-	
-
+	return result;
 }

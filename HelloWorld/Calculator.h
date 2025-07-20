@@ -1,6 +1,6 @@
 #pragma once
 
-enum CalculatorOperation
+enum ECalculatorOperation
 {
 	ADD,
 	SUBTRACT,
@@ -13,8 +13,8 @@ enum CalculatorOperation
 class Calculator
 {
 public:
-	CalculatorOperation ConvertCalculatorOperation(char op);
-	int Calculate(CalculatorOperation op);
+	ECalculatorOperation ConvertCalculatorOperation(char op) const;
+	int Calculate(ECalculatorOperation op);
 
 	 int digit1;
 	 int digit2;
