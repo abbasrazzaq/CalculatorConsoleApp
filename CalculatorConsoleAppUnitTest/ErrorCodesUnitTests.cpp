@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "CppUnitTest.h"
-#include "../HelloWorld/ErrorCodes.h"
+#include "../CalculatorConsoleApp/ErrorCodes.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "CppUnitTest.h"
-#include "../HelloWorld/Calculator.h"
+#include "../CalculatorConsoleApp/Calculator.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
